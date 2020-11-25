@@ -15,7 +15,7 @@ public class AudioRead : MonoBehaviour {
 
     private bool tempFull = false;
 
-
+    private GameManager gm;
     private List<float> tempRecording = new List<float>();
     private float[] recordedInstrument;
 
@@ -53,6 +53,8 @@ public class AudioRead : MonoBehaviour {
             startRecord = !startRecord;
         if (Input.GetKeyDown("z"))
             audioSource.Play();
+        if (Input.GetKeyDown("x"))
+            tempSource.Play();
     }
 
     private void RecordAudio()
@@ -73,15 +75,16 @@ public class AudioRead : MonoBehaviour {
 
         //Set Audio
         recordedInstrument = fullClip;
-        audioSource.clip = AudioClip.Create("recorded samples", fullClip.Length * 2, 1, frequency, false);
+        audioSource.clip = AudioClip.Create("recorded samples", fullClip.Length, 1, frequency, false);
 
         audioSource.clip.SetData(fullClip, 0);
+        
     }
 
     private void PauseRecording()
     {
         audioSource.Stop();
-        tempRecording.Clear();
+        //tempRecording.Clear();
         Microphone.End(null);
         audioSource.clip = Microphone.Start(null, true, seconds, frequency);
         print("Pause Recording");
@@ -123,10 +126,11 @@ public class AudioRead : MonoBehaviour {
             x.GetData(first, 0);
             y.GetData(second, 0);
 
-            final = first.Concat(second).ToArray();
+            final = second.Concat(first).ToArray();
 
-            audioSource.clip = AudioClip.Create("recorded samples", final.Length * 2, 1, frequency, false);
-            audioSource.clip.SetData(final, 0);       
+            audioSource.clip = AudioClip.Create("recorded samples", final.Length , 1, frequency, false);
+            audioSource.clip.SetData(final, 0);
+            tempSource.clip.SetData(final, 0);
         }
     }
 }
